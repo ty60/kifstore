@@ -1,0 +1,71 @@
+body {
+  background-color: #7CC28E;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+#ban {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  border: 1px solid #000;
+  width: min(95vw, 72vh);
+}
+
+.cell {
+  border: 1px solid #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #deb887;
+  aspect-ratio: 1;
+}
+
+.piece {
+  font-size: min(6vw, 6vh);
+  font-family: "Noto Sans JP", sans-serif;
+}
+
+.piece-stand {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: 1fr;
+  margin-top: 1vh;
+  margin-bottom: 1vh;
+  width: min(95vw, 72vh);
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: min(5vw, 4vh);
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.piece-in-hand {
+  margin: auto auto;
+  text-align: center;
+}
+
+.opponent {
+  transform: scaleY(-1);
+}
+
+.selected,.last-touched {
+  background-color: #D29E5F;
+}
+
+.last-touched {
+  font-weight: bold;
+}
+
+div[id*="num-piece"] {
+  margin: auto auto;
+  text-align: center;
+}
+
+.promoted {
+  color: crimson;
+}
+
+.selected-in-hand {
+  background-color: #58B06E;
+}
