@@ -6,14 +6,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css" />
-    <script src="script.js" ></script>
+    <script type="module" src="script.js" ></script>
   </head>
   <body>
-    <div id="opponent-pieces" class="piece-stand" >
+    <div id="shogi-game">
+      <div id="opponent-pieces" class="piece-stand" >
+      </div>
+        <div id="ban"></div>
+        <div id="player-pieces" class="piece-stand" ></div>
+        <div id="control-panel">
+          <button id="save-button">SAVE</button>
+        </div>
     </div>
-      <div id="ban">
-      </div>
-      <div id="player-pieces" class="piece-stand" >
-      </div>
   </body>
 </html>
