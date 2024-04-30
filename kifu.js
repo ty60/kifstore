@@ -29,18 +29,25 @@ class Kifu {
     return ret;
   }
 
-  addMove(turn, fromX, fromY, toX, toY, piece, promote, fromInHand) {
+  addMove(turn, owner, fromX, fromY, toX, toY, piece, promote, fromInHand, takePieceId, takePiecePromoted) {
     // TODO: Add time
     this.moves.push({
       turn: turn,
+      owner: owner,
       fromX: fromX,
       fromY: fromY,
       toX: toX,
       toY: toY,
       piece: piece,
       promote: promote,
-      fromInHand: fromInHand
+      fromInHand: fromInHand,
+      takePieceId: takePieceId,
+      takePiecePromoted: takePiecePromoted,
     });
+  }
+
+  popMove() {
+    return this.moves.pop();
   }
 
   dump() {
@@ -62,6 +69,10 @@ class Kifu {
     let numTurns = this.moves.length;
     ret += `${numTurns + 1} 中断 (0:00/0:00:00)\n`;
     return ret;
+  }
+
+  getMove(turn) {
+    return this.moves[turn - 1];
   }
 }
 

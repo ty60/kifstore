@@ -92,7 +92,8 @@ class Game {
     this.inHandIsOpponent = false;
     this.inHandPieceId = -1;
 
-    this.moveNum = 1;
+    this.turn = 1;
+    this.turnShowing = 1;
 
     this.coveredPiece = null;
   }
@@ -156,51 +157,57 @@ class Game {
       game.inHandIsPlayer = game.inHandIsOpponent = false;
       game.inHandPieceId = -1;
 
-      game.kifu.addMove(game.moveNum, 0, 0, transCoordX(x), transCoordY(y),
-                        pieceToChar(this.board[y][x].piece), false, true);
+      game.kifu.addMove(game.turn, this.board[y][x].piece.owner, 0, 0, transToKifX(x), transToKifY(y),
+                        pieceToChar(this.board[y][x].piece), false, true, KARA, false);
 
-      game.moveNum++;
+      game.turn++;
+      game.turnShowing = game.turn;
       return;
     }
 
     let [fromX, fromY] = this.selected;
 
+    let pieceTakenId = KARA;
+    let pieceTakenPromoted = false;
     if (this.board[y][x].piece.type !== KARA && !this.checkOwnership(x, y)) {
-      const pieceType = this.board[y][x].piece.type;
+      pieceTakenId = this.board[y][x].piece.type;
+      pieceTakenPromoted = this.board[y][x].piece.promoted;
       if (this.state === PLAYER_HOLDING_PIECE) {
-        this.playerPiecesInHand[pieceType].num++;
+        this.playerPiecesInHand[pieceTakenId].num++;
       } else {
-        this.opponentPiecesInHand[pieceType].num++;
+        this.opponentPiecesInHand[pieceTakenId].num++;
       }
     }
 
     this.board[y][x].piece.type = this.board[fromY][fromX].piece.type;
     this.board[y][x].piece.owner = this.board[fromY][fromX].piece.owner;
 
+    let clearFrom = true;
+
     // TODO: Clean up the promotion code below
-    const canPromote = (y, piece) => {
+    const canPromote = (fromY, toY, piece) => {
       if (piece.promoted) {
         return false;
       } else if (piece.type === KIN || piece.type === GYOKU) {
         return false;
-      } else if (piece.owner === PLAYER && 0 <= y && y <= 2 && !piece.promoted) {
+      } else if (piece.owner === PLAYER && ((0 <= fromY && fromY <= 2) || (0 <= toY && toY <= 2)) && !piece.promoted) {
         return true;
-      } else if (piece.owner === OPPONENT && 6 <= y && y <= 8 && !piece.promoted) {
+      } else if (piece.owner === OPPONENT && ((6 <= fromY && fromY <= 8) || (6 <= toY && toY <= 8)) && !piece.promoted) {
         return true;
       } else {
         return false;
       }
     };
-    const mustPromote = (y, piece) => {
-      if (piece.owner === PLAYER && y === 0) {
-        return piece.type === KEI || piece.type === KYOU;
-      } else if (piece.owner === OPPONENT && y === 8) {
-        return piece.type === KEI || piece.type === KYOU;
+    const mustPromote = (toY, piece) => {
+      if (piece.owner === PLAYER && toY === 0) {
+        return piece.type === FU || piece.type === KEI || piece.type === KYOU;
+      } else if (piece.owner === OPPONENT && toY === 8) {
+        return piece.type === FU || piece.type === KEI || piece.type === KYOU;
       } else {
         false;
       }
     };
-    if (this.board[fromY][fromX].piece.owner === PLAYER && canPromote(y, this.board[fromY][fromX].piece)) {
+    if (this.board[fromY][fromX].piece.owner === PLAYER && canPromote(fromY, y, this.board[fromY][fromX].piece)) {
       if (mustPromote(y, this.board[fromY][fromX].piece)) {
         this.board[y][x].piece.promoted = true;
       } else {
@@ -211,8 +218,12 @@ class Game {
         promCan.owner = this.board[y][x].piece.owner;
         promCan.promoted = true;
         this.board[y + 1][x].piece = promCan;
+
+        if (fromX === x && fromY === y + 1) {
+          clearFrom = false;
+        }
       }
-    } else if (this.board[fromY][fromX].piece.owner === OPPONENT && canPromote(y, this.board[fromY][fromX].piece)) {
+    } else if (this.board[fromY][fromX].piece.owner === OPPONENT && canPromote(fromY, y, this.board[fromY][fromX].piece)) {
       if (mustPromote(y, this.board[fromY][fromX].piece)) {
         this.board[y][x].piece.promoted = true;
       } else {
@@ -223,27 +234,46 @@ class Game {
         promCan.owner = this.board[y][x].piece.owner;
         promCan.promoted = true;
         this.board[y - 1][x].piece = promCan;
+
+        if (fromX === x && fromY === y - 1) {
+          clearFrom = false;
+        }
       }
     } else {
       this.board[y][x].piece.promoted = this.board[fromY][fromX].piece.promoted;
     }
 
+    game.kifu.addMove(game.turn,this.board[fromY][fromX].piece.owner, transToKifX(fromX), transToKifY(fromY),
+      transToKifX(x), transToKifY(y), pieceToChar(this.board[y][x].piece),
+      !this.board[fromY][fromX].piece.promoted && this.board[y][x].piece.promoted, false,
+      pieceTakenId, pieceTakenPromoted);
+
     // Is the move is determined (i.e., no promotion selection triggered)?
     if (this.coveredPiece === null) {
-      game.kifu.addMove(game.moveNum, transCoordX(fromX), transCoordY(fromY),
-        transCoordX(x), transCoordY(y), pieceToChar(this.board[y][x].piece),
-        !this.board[fromY][fromX].piece.promoted && this.board[y][x].piece.promoted, false);
-
       this.lastX = x;
       this.lastY = y;
 
-      this.moveNum++;
+      this.turn++;
+      this.turnShowing = this.turn;
     } else {
       this.promotingX = x;
       this.promotingY = y;
     }
 
-    this.board[fromY][fromX].piece.type = KARA;
+    if (clearFrom) {
+      // If the cell where the piece is coming from is different
+      // from the cell where the promotion candidate is going to be shown,
+      // the original cell must be marked as empty.
+      this.board[fromY][fromX].piece.type = KARA;
+      this.board[fromY][fromX].piece.promoted = false;
+    } else {
+      // If the cell where the piece is coming from is,
+      // the same cell as the cell where the promotion candidate is going to be shown,
+      // there is no need to keep the coverred piece.
+      this.coveredPiece.type = KARA;
+      this.coveredPiece.promoted = false;
+    }
+
     this.unselect();
   }
 }
@@ -313,6 +343,19 @@ const init = () => {
   }
 
   // Configure control board
+  const prevButton = document.getElementById("prev-button");
+  const nextButton = document.getElementById("next-button");
+  prevButton.onmousedown = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    showPrev();
+  };
+  nextButton.onmousedown = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    showNext();
+  };
+
   const saveButton = document.getElementById("save-button");
   saveButton.onclick = (event) => {
     event.preventDefault();
@@ -349,7 +392,7 @@ const ondown = (x, y) => {
 const unselectHoldingPiece = () => {
   if (game.state === PLAYER_HOLDING_PIECE || game.state === OPPONENT_HOLDING_PIECE) {
     game.unselect();
-    if (game.moveNum === 1) {
+    if (game.turn === 1) {
       game.state = FIRST_MOVE;
     } else if (game.state === PLAYER_HOLDING_PIECE) {
       game.state = PLAYER_SELECTING;
@@ -461,9 +504,16 @@ const selectPromotion = (x, y) => {
     game.board[promotingY - 1][x].piece = game.coveredPiece;
   }
 
-  game.kifu.addMove(game.moveNum, transCoordX(game.lastX), transCoordY(game.lastY),
-    transCoordX(promotingX), transCoordY(promotingY), pieceToChar(game.board[y][x].piece), true, false);
-  game.moveNum++;
+  // Pop the last move and config it so that it includes the promotion information
+  let move = game.kifu.popMove();
+  move = Object.assign(move, { promote: game.board[promotingY][promotingX].piece.promoted });
+  game.kifu.addMove(move.turn, game.board[promotingY][promotingX].piece.owner,
+    move.fromX, move.fromY, move.toX, move.toY,
+    move.piece, move.promote, move.fromInHand, move.takePieceId, move.takePiecePromoted);
+
+  game.turn++;
+  game.turnShowing = game.turn;
+
   game.lastX = promotingX;
   game.lastY = promotingY;
 
@@ -538,6 +588,139 @@ const showBoard = () => {
     const pieceNum = document.getElementById(`player-num-piece-${pieceType}`);
     pieceNum.innerText = num;
   }
+
+  // Configure control board
+  const prevButton = document.getElementById("prev-button");
+  const nextButton = document.getElementById("next-button");
+
+  if (game.turnShowing === 1) {
+    prevButton.classList.add("disabled-button");
+  } else if (game.turnShowing !== 1 && prevButton.classList.contains("disabled-button")) {
+    prevButton.classList.remove("disabled-button");
+  }
+  if (game.turnShowing === game.kifu.moves.length + 1 || game.promotingX !== -1) {
+    nextButton.classList.add("disabled-button");
+  } else if (game.turnShowing !== game.kifu.moves.length + 1 && nextButton.classList.contains("disabled-button")) {
+    nextButton.classList.remove("disabled-button");
+  }
+};
+
+
+const showPrev = () => {
+  if (game.turnShowing === 1) {
+    return;
+  }
+
+  const prevMove = game.kifu.getMove(game.turnShowing - 1);
+  const turn = prevMove.turn;
+  const owner = prevMove.owner;
+  const fromX = transFromKifX(prevMove.fromX);
+  const fromY = transFromKifY(prevMove.fromY);
+  const toX = transFromKifX(prevMove.toX);
+  const toY = transFromKifY(prevMove.toY);
+  const piece = prevMove.piece;
+  const promote = prevMove.promote;
+  const fromInHand = prevMove.fromInHand;
+  const takePieceId = prevMove.takePieceId;
+  const takePiecePromoted = prevMove.takePiecePromoted;
+
+  const [pieceId, promoted] = pieceCharToIdPromoted(piece);
+
+  if (!fromInHand) {
+    game.board[fromY][fromX].piece.type = pieceId;
+    game.board[fromY][fromX].piece.owner = owner;
+    game.board[fromY][fromX].piece.promoted = promoted;
+    if (promote) {
+      // If this move is a promotion, the previous piece should not be promoted
+      game.board[fromY][fromX].piece.promoted = false;
+    }
+  } else {
+    if (owner === PLAYER) {
+      game.playerPiecesInHand[pieceId].num++;
+    } else {
+      game.opponentPiecesInHand[pieceId].num++;
+    }
+  }
+
+  if (takePieceId !== KARA) {
+    game.board[toY][toX].piece.type = takePieceId;
+    game.board[toY][toX].piece.owner = owner === PLAYER ? OPPONENT : PLAYER;
+    game.board[toY][toX].piece.promoted = takePiecePromoted;
+    if (owner === PLAYER) {
+      game.playerPiecesInHand[takePieceId].num--;
+    } else {
+      game.opponentPiecesInHand[takePieceId].num--;
+    }
+  } else {
+    game.board[toY][toX].piece.type = KARA;
+  }
+
+  if (turn === 1) {
+    game.lastX = -1;
+    game.lastY = -1;
+  } else {
+    const prevPrev = game.kifu.getMove(turn - 1);
+    game.lastX = transFromKifX(prevPrev.toX);
+    game.lastY = transFromKifY(prevPrev.toY);
+  }
+
+  game.turnShowing--;
+
+  showBoard();
+};
+
+
+const showNext = () => {
+  if (game.turnShowing === game.kifu.moves.length + 1) {
+    return;
+  }
+
+  const nextMove = game.kifu.getMove(game.turnShowing);
+  const turn = nextMove.turn;
+  const owner = nextMove.owner;
+  const fromX = transFromKifX(nextMove.fromX);
+  const fromY = transFromKifY(nextMove.fromY);
+  const toX = transFromKifX(nextMove.toX);
+  const toY = transFromKifY(nextMove.toY);
+  const piece = nextMove.piece;
+  const promote = nextMove.promote;
+  const fromInHand = nextMove.fromInHand;
+  const takePieceId = nextMove.takePieceId;
+  const takePiecePromoted = nextMove.takePiecePromoted;
+
+  const [pieceId, promoted] = pieceCharToIdPromoted(piece);
+
+  if (fromInHand) {
+    if (owner === PLAYER) {
+      game.playerPiecesInHand[pieceId].num--;
+    } else {
+      game.opponentPiecesInHand[pieceId].num--;
+    }
+  }
+
+  if (!fromInHand) {
+    game.board[fromY][fromX].piece.type = KARA;
+    game.board[fromY][fromX].piece.promoted = false;
+  }
+
+  game.board[toY][toX].piece.type = pieceId;
+  game.board[toY][toX].piece.owner = owner;
+  game.board[toY][toX].piece.promoted = promoted || promote;
+
+  if (takePieceId !== KARA) {
+    if (owner === PLAYER) {
+      game.playerPiecesInHand[takePieceId].num++;
+    } else {
+      game.opponentPiecesInHand[takePieceId].num++;
+    }
+  }
+
+  game.lastX = toX;
+  game.lastY = toY;
+
+  game.turnShowing++;
+
+  showBoard();
 };
 
 
@@ -607,7 +790,41 @@ const pieceTypeToChar = (pieceType) => {
 }
 
 
-const transCoordX = (x) => {
+const pieceCharToIdPromoted = (pieceChar) => {
+  switch (pieceChar) {
+    case "歩":
+      return [FU, false];
+    case "と":
+      return [FU, true];
+    case "香":
+      return [KYOU, false];
+    case "杏":
+      return [KYOU, true];
+    case "桂":
+      return [KEI, false];
+    case "圭":
+      return [KEI, true];
+    case "銀":
+      return [GIN, false];
+    case "全":
+      return [GIN, true];
+    case "金":
+      return [KIN, false];
+    case "角":
+      return [KAKU, false];
+    case "馬":
+      return [KAKU, true];
+    case "飛":
+      return [HISHA, false];
+    case "龍":
+      return [HISHA, true];
+    case "玉":
+      return [GYOKU, false];
+  }
+}
+
+
+const transToKifX = (x) => {
   // In this script, the origin is the top-left corner.
   // Transform the coordinate so that it will start from the top-right corner,
   // which is the standard in shogi.
@@ -615,6 +832,16 @@ const transCoordX = (x) => {
 }
 
 
-const transCoordY = (y) => {
+const transToKifY = (y) => {
   return y + 1;
+}
+
+
+const transFromKifX = (x) => {
+  return 9 - x;
+}
+
+
+const transFromKifY = (y) => {
+  return y - 1;
 }
