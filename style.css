@@ -1,114 +1,114 @@
 body {
-  background-color: #7CC28E;
+    background-color: #7CC28E;
 }
 
 
 #shogi-game {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }
 
 #ban {
-  display: grid;
-  grid-template-columns: repeat(9, 1fr);
-  grid-template-rows: repeat(9, 1fr);
-  border: 1px solid #000;
-  width: min(95vw, 72vh);
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(9, 1fr);
+    border: 1px solid #000;
+    width: min(95vw, 72vh);
 }
 
 .cell {
-  border: 1px solid #000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #deb887;
-  aspect-ratio: 1;
+    border: 1px solid #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #deb887;
+    aspect-ratio: 1;
 }
 
 .piece {
-  font-size: min(5vw, 5vh);
-  font-family: "Noto Sans JP", sans-serif;
+    font-size: min(5vw, 5vh);
+    font-family: "Noto Sans JP", sans-serif;
 }
 
 .piece-stand {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  grid-template-rows: 1fr;
-  margin-top: 1vh;
-  margin-bottom: 1vh;
-  width: min(95vw, 72vh);
-  font-family: "Noto Sans JP", sans-serif;
-  font-size: min(5vw, 4vh);
-  margin-top: 4px;
-  margin-bottom: 4px;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: 1fr;
+    margin-top: 1vh;
+    margin-bottom: 1vh;
+    width: min(95vw, 72vh);
+    font-family: "Noto Sans JP", sans-serif;
+    font-size: min(5vw, 4vh);
+    margin-top: 4px;
+    margin-bottom: 4px;
 }
 
 .piece-in-hand {
-  margin: auto auto;
-  text-align: center;
+    margin: auto auto;
+    text-align: center;
 }
 
 .opponent {
-  transform: scaleY(-1);
+    transform: scaleY(-1);
 }
 
 .selected,.last-touched {
-  background-color: #D29E5F;
+    background-color: #D29E5F;
 }
 
 .last-touched {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 div[id*="num-piece"] {
-  margin: auto auto;
-  text-align: center;
+    margin: auto auto;
+    text-align: center;
 }
 
 .promoted {
-  color: crimson;
+    color: crimson;
 }
 
 .selected-in-hand {
-  background-color: #58B06E;
+    background-color: #58B06E;
 }
 
 #control-panel {
-  justify-content: start;
-  align-items: start;
-  flex-direction: row;
+    justify-content: start;
+    align-items: start;
+    flex-direction: row;
 }
 
 
 #save-button {
-  color: #fff;
-  background-color: #000;
-  border-radius: 100vh;
-  border: none;
-  outline: none;
-  box-shadow: none;
-  width: 8vw;
-  height: 3vw;
-  font-size: 1vw;
-  margin-top: 1vh;
+    color: #fff;
+    background-color: #000;
+    border-radius: 100vh;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    width: 8vw;
+    height: 3vw;
+    font-size: 1vw;
+    margin-top: 1vh;
 }
 
 
 .remote-button {
-  color: #fff;
-  background-color: #000;
-  border-radius: 100vh;
-  border: none;
-  outline: none;
-  box-shadow: none;
-  width: 8vw;
-  height: 3vw;
-  font-size: 1vw;
+    color: #fff;
+    background-color: #000;
+    border-radius: 100vh;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    width: 8vw;
+    height: 3vw;
+    font-size: 1vw;
 }
 
 
 /* This must come after other button configs */
 .disabled-button {
-  background-color: #e6e6e6;
+    background-color: #e6e6e6;
 }
