@@ -26,7 +26,6 @@ const OPPONENT_SELECTING     = 3;
 const OPPONENT_HOLDING_PIECE = 4;
 const SELECT_PROMOTION       = 5
 
-
 class Piece {
   constructor () {
     this.type = KARA;
@@ -96,6 +95,9 @@ class Game {
     this.turnShowing = 1;
 
     this.coveredPiece = null;
+
+    this.savedState = null;
+    this.isReplaying = false;
   }
 
   checkOwnership(x, y) {
@@ -136,32 +138,32 @@ class Game {
 
   moveTo(x, y) {
     // Play piece from pieces in hand
-    if (game.inHandIsPlayer || game.inHandIsOpponent) {
+    if (this.inHandIsPlayer || this.inHandIsOpponent) {
       if (this.board[y][x].piece.type !== KARA) {
         return;
       }
 
-      this.board[y][x].piece.type = game.inHandPieceId;
-      this.board[y][x].piece.owner = game.inHandIsPlayer ? PLAYER : OPPONENT;
+      this.board[y][x].piece.type = this.inHandPieceId;
+      this.board[y][x].piece.owner = this.inHandIsPlayer ? PLAYER : OPPONENT;
       this.board[y][x].piece.promoted = false;
 
       this.lastX = x;
       this.lastY = y;
 
-      if (game.inHandIsPlayer) {
-        this.playerPiecesInHand[game.inHandPieceId].num--;
+      if (this.inHandIsPlayer) {
+        this.playerPiecesInHand[this.inHandPieceId].num--;
       } else {
-        this.opponentPiecesInHand[game.inHandPieceId].num--;
+        this.opponentPiecesInHand[this.inHandPieceId].num--;
       }
 
-      game.inHandIsPlayer = game.inHandIsOpponent = false;
-      game.inHandPieceId = -1;
+      this.inHandIsPlayer = this.inHandIsOpponent = false;
+      this.inHandPieceId = -1;
 
-      game.kifu.addMove(game.turn, this.board[y][x].piece.owner, 0, 0, transToKifX(x), transToKifY(y),
+      this.kifu.addMove(this.turn, this.board[y][x].piece.owner, 0, 0, transToKifX(x), transToKifY(y),
                         pieceToChar(this.board[y][x].piece), false, true, KARA, false);
 
-      game.turn++;
-      game.turnShowing = game.turn;
+      this.turn++;
+      this.turnShowing = this.turn;
       return;
     }
 
@@ -243,7 +245,7 @@ class Game {
       this.board[y][x].piece.promoted = this.board[fromY][fromX].piece.promoted;
     }
 
-    game.kifu.addMove(game.turn,this.board[fromY][fromX].piece.owner, transToKifX(fromX), transToKifY(fromY),
+    this.kifu.addMove(this.turn,this.board[fromY][fromX].piece.owner, transToKifX(fromX), transToKifY(fromY),
       transToKifX(x), transToKifY(y), pieceToChar(this.board[y][x].piece),
       !this.board[fromY][fromX].piece.promoted && this.board[y][x].piece.promoted, false,
       pieceTakenId, pieceTakenPromoted);
@@ -409,6 +411,16 @@ const selectPieceInHand = (pieceId, isPlayer) => {
     return;
   }
 
+  if (game.isReplaying) {
+    if (window.confirm("現在の棋譜を上書きしますか？")) {
+      game.isReplaying = false;
+      game.savedState = null;
+      game.turn = game.turnShowing;
+    } else {
+      return;
+    }
+  }
+
   if ((isPlayer && game.state !== PLAYER_SELECTING) || (!isPlayer && game.state !== OPPONENT_SELECTING)) {
     return;
   }
@@ -434,6 +446,16 @@ const selectPieceInHand = (pieceId, isPlayer) => {
 const selectPiece = (selectX, selectY) => {
   if (!(game.state === FIRST_MOVE || game.checkOwnership(selectX, selectY))) {
     return;
+  }
+
+  if (game.isReplaying) {
+    if (window.confirm("現在の棋譜を上書きしますか？")) {
+      game.isReplaying = false;
+      game.savedState = null;
+      game.turn = game.turnShowing;
+    } else {
+      return;
+    }
   }
 
   game.select(selectX, selectY);
@@ -607,8 +629,14 @@ const showBoard = () => {
 
 
 const showPrev = () => {
-  if (game.turnShowing === 1) {
+  if (game.turnShowing === 1 || !(game.state === PLAYER_SELECTING || game.state === OPPONENT_SELECTING)) {
+    console.log("Cannot show previous move now.");
     return;
+  }
+
+  if (!game.isReplaying) {
+    game.isReplaying = true;
+    game.savedState = game.state;
   }
 
   const prevMove = game.kifu.getMove(game.turnShowing - 1);
@@ -664,6 +692,8 @@ const showPrev = () => {
     game.lastY = transFromKifY(prevPrev.toY);
   }
 
+  game.state = game.state === PLAYER_SELECTING ? OPPONENT_SELECTING : PLAYER_SELECTING;
+
   game.turnShowing--;
 
   showBoard();
@@ -671,7 +701,8 @@ const showPrev = () => {
 
 
 const showNext = () => {
-  if (game.turnShowing === game.kifu.moves.length + 1) {
+  if (game.turnShowing === game.turn || !(game.state === PLAYER_SELECTING || game.state === OPPONENT_SELECTING)) {
+    console.log("Cannot show next move now.");
     return;
   }
 
@@ -719,6 +750,13 @@ const showNext = () => {
   game.lastY = toY;
 
   game.turnShowing++;
+  game.state = game.state === PLAYER_SELECTING ? OPPONENT_SELECTING : PLAYER_SELECTING;
+
+  if (game.turnShowing === game.turn) {
+    game.isReplaying = false;
+    game.state = game.savedState;
+    game.savedState = null;
+  }
 
   showBoard();
 };

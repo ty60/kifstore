@@ -30,6 +30,11 @@ class Kifu {
   }
 
   addMove(turn, owner, fromX, fromY, toX, toY, piece, promote, fromInHand, takePieceId, takePiecePromoted) {
+    if (turn <= this.moves.length) {
+      // The kifu is going to be overwritten
+      this.moves.splice(turn - 1);
+    }
+
     // TODO: Add time
     this.moves.push({
       turn: turn,
