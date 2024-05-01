@@ -1,26 +1,28 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css" />
-    <script type="module" src="script.js" ></script>
-  </head>
-  <body>
-    <div id="shogi-game">
-      <div id="opponent-pieces" class="piece-stand" >
-      </div>
-        <div id="ban"></div>
-        <div id="player-pieces" class="piece-stand" ></div>
-        <div id="control-panel">
-          <div id="remote">
-            <button id="prev-button" class="remote-button">&#x25C0;</button>
-            <button id="next-button" class="remote-button">&#x25B6;</button>
-          </div>
-          <button id="save-button">SAVE</button>
+    <head>
+        <meta charset="utf-8" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="style.css" />
+        <script type="module" src="script.js" ></script>
+    </head>
+    <body>
+        <div id="shogi-game">
+            <div id="opponent-pieces" class="piece-stand" >
+            </div>
+                <div id="ban"></div>
+                <div id="player-pieces" class="piece-stand" ></div>
+                <div id="control-panel">
+                    <div id="remote">
+                        <button id="prev-button" class="remote-button">&#x25C0;</button>
+                        <button id="next-button" class="remote-button">&#x25B6;</button>
+                    </div>
+                    <div id="kif-control">
+                        <button id="save-button">SAVE</button>
+                    </div>
+                </div>
         </div>
-    </div>
-  </body>
+    </body>
 </html>
