@@ -363,9 +363,39 @@ const init = () => {
     event.preventDefault();
     event.stopPropagation();
 
+    onsave();
+  };
+
+  const modalBackground = document.getElementById("modal-background");
+  modalBackground.onpointerdown = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    closeSaveModal();
+  };
+
+  const modalCloseButton = document.getElementById("modal-close-button");
+  modalCloseButton.onclick = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    closeSaveModal();
+  };
+
+  const kifTitle = document.getElementById("kif-title");
+  kifTitle.onpointerdown = (event) => {
+    event.stopPropagation();
+  }
+
+  const saveKifButton = document.getElementById("modal-save-kif-button");
+  saveKifButton.onpointerdown = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    // TODO: Send to server
     const kifu = game.kifu.dump();
     console.log(kifu);
-  };
+  }
 
   showBoard();
 };
@@ -759,6 +789,22 @@ const showNext = () => {
   }
 
   showBoard();
+};
+
+
+const onsave = () => {
+  const modalBackground = document.getElementById("modal-background");
+  const modalContent = document.getElementById("modal-content");
+  modalBackground.style.display = "block";
+  modalContent.style.display = "flow";
+};
+
+
+const closeSaveModal = () => {
+  const modalBackground = document.getElementById("modal-background");
+  const modalContent = document.getElementById("modal-content");
+  modalBackground.style.display = "none";
+  modalContent.style.display = "none";
 };
 
 

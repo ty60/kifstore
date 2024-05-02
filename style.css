@@ -1,5 +1,6 @@
 body {
     background-color: #7CC28E;
+    font-family: "Noto Sans JP", sans-serif;
 }
 
 
@@ -28,7 +29,6 @@ body {
 
 .piece {
     font-size: min(5vw, 5vh);
-    font-family: "Noto Sans JP", sans-serif;
 }
 
 .piece-stand {
@@ -38,7 +38,6 @@ body {
     margin-top: 1vh;
     margin-bottom: 1vh;
     width: min(95vw, 72vh);
-    font-family: "Noto Sans JP", sans-serif;
     font-size: min(5vw, 4vh);
     margin-top: 4px;
     margin-bottom: 4px;
@@ -75,11 +74,27 @@ div[id*="num-piece"] {
 }
 
 #control-panel {
-    justify-content: start;
-    align-items: start;
-    flex-direction: row;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    width: min(95vw, 72vh);
 }
 
+#remote {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 1vh;
+    width: min(70vw, 60vh);
+}
+
+#kif-control {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 1vh;
+}
 
 #save-button {
     color: #fff;
@@ -94,7 +109,6 @@ div[id*="num-piece"] {
     margin-top: 1vh;
 }
 
-
 .remote-button {
     color: #fff;
     background-color: #000;
@@ -107,8 +121,96 @@ div[id*="num-piece"] {
     font-size: 1vw;
 }
 
-
 /* This must come after other button configs */
 .disabled-button {
     background-color: #e6e6e6;
+}
+
+#modal-background {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#modal-content {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    background-color: #FEFEFE;
+    border-radius: 10px;
+    /*
+    width: 500px;
+    height: 17vh;
+    */
+    transform: translateX(-50%) translateY(-50%);
+}
+
+#modal-header {
+    background-color: #B55233;
+    padding: 0.3em;
+    font-size: 1.5em;
+    border-radius: 10px 10px 0px 0px;
+    display: flex;
+    justify-content: space-between;
+    color: #fff;
+}
+
+#modal-close-button:hover,
+#modal-close-button:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#modal-body {
+    display: flex;
+    justify-content: center;
+    background-color: #FEFEFE;
+}
+
+#kif-title {
+    font-size: 1.25em;
+    width: 80%;
+    margin: 1em;
+}
+
+#modal-footer {
+    text-align: right;
+}
+
+#modal-save-kif-button {
+    background-color: #B55233;
+    outline: none;
+    box-shadow: none;
+    width: 20%;
+    color: #fff;
+    font-size: 1.25em;
+    margin: 0.5em;
+    border: none;
+    border-radius: 10px;
+}
+
+/* Smartphone */
+@media (max-width: 980px) {
+    #modal-content {
+        width: 90vw;
+        height: 190px;
+    }
+
+    #save-button {
+        width: 50vw;
+        height: 50px;
+        font-size: 1em;
+    }
+
+    .remote-button {
+        width: 25vw;
+        height: 40px;
+        font-size: 1em;
+    }
 }
