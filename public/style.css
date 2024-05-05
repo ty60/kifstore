@@ -64,6 +64,11 @@ h1 {
     aspect-ratio: 1;
 }
 
+.cell:hover,
+.cell:focus {
+    cursor: default;
+}
+
 .piece {
     font-size: min(5vw, 5vh);
 }
@@ -83,6 +88,11 @@ h1 {
 .piece-in-hand {
     margin: auto auto;
     text-align: center;
+}
+
+.piece-in-hand:hover,
+.piece-in-hand:focus {
+    cursor: default;
 }
 
 .opponent {
@@ -140,10 +150,15 @@ div[id*="num-piece"] {
     border: none;
     outline: none;
     box-shadow: none;
-    width: 8vw;
-    height: 3vw;
-    font-size: 1vw;
+    width: 150px;
+    height: 40px;
+    font-size: 25px;
     margin-top: 1vh;
+}
+
+#save-button:hover,
+#save-button:focus {
+  cursor: pointer;
 }
 
 .remote-button {
@@ -153,14 +168,24 @@ div[id*="num-piece"] {
     border: none;
     outline: none;
     box-shadow: none;
-    width: 8vw;
-    height: 3vw;
-    font-size: 1vw;
+    width: 150px;
+    height: 40px;
+    font-size: 25px;
+}
+
+.remote-button:hover,
+.remote-button:focus {
+  cursor: pointer;
 }
 
 /* This must come after other button configs */
 .disabled-button {
-    background-color: #e6e6e6;
+  background-color: #e6e6e6;
+}
+
+.disabled-button:hover,
+.disabled-button:focus {
+  cursor: not-allowed;
 }
 
 #modal-background {
@@ -180,10 +205,6 @@ div[id*="num-piece"] {
     left: 50%;
     background-color: #FEFEFE;
     border-radius: 10px;
-    /*
-    width: 500px;
-    height: 17vh;
-    */
     transform: translateX(-50%) translateY(-50%);
 }
 
@@ -226,10 +247,14 @@ div[id*="num-piece"] {
     box-shadow: none;
     width: 20%;
     color: #fff;
-    font-size: 1.25em;
     margin: 0.5em;
     border: none;
     border-radius: 10px;
+}
+
+#modal-save-kif-button:hover,
+#modal-save-kif-button:focus {
+    cursor: pointer;
 }
 
 /* Smartphone */
@@ -246,11 +271,8 @@ div[id*="num-piece"] {
     }
 
     .remote-button {
-        width: 25vw;
-        height: 40px;
+        width: 30vw;
+        height: 50px;
         font-size: 1em;
     }
 }
-
-
-
