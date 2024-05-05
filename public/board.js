@@ -392,9 +392,23 @@ const init = () => {
     event.preventDefault();
     event.stopPropagation();
 
-    // TODO: Send to server
     const kifu = game.kifu.dump();
-    console.log(kifu);
+    fetch("/kif", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        kifTitle: kifTitle.value,
+        kif: kifu
+      })
+    }).then((res) => {
+      if (!res.ok) {
+        console.error("Failed to save kifu.");
+      }
+    }).then(() => {
+      location.href = "/";
+    });
   }
 
   showBoard();

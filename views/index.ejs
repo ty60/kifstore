@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js"></script>
+  </head>
+  <body>
+    <h1>棋譜一覧</h1>
+    <div id="kif-list">
+      <% for (let i = 0; i < kifs.length; i++) { %>
+      <div class="kif-item" id="kifid-<%= kifs[i].id %>">
+        <%= kifs[i].title %>
+      </div>
+      <% } %>
+    </div>
+    </div>
+  </body>
+</html>
