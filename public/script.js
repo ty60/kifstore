@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   kifItems.forEach((kifItem) => {
     kifItem.onclick = () => {
       const kifId = kifItem.id.match(/\d+/)[0];
-      location.href = `/replay/${kifId}`;
+      location.href = `/board/${kifId}`;
     };
   });
 });

@@ -18,8 +18,13 @@ app.get("/", async (req, res) => {
   res.render("index", { kifs: kifs });
 });
 
-app.get("/replay/:kifid", async (req, res) => {
-  res.send(`replay: ${req.params.kifid}`);
+app.get("/board/:kifid", async (req, res) => {
+  console.log("kifid: " + req.params.kifid);
+  res.render("board", { kifid: req.params.kifid });
+});
+
+app.get("/board", async (req, res) => {
+  res.render("board");
 });
 
 app.route("/kif")

@@ -6,8 +6,17 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="style.css" />
-        <script type="module" src="board.js" ></script>
+        <link rel="stylesheet" href="/style.css" />
+        <script type="module">
+          import { init } from '/board.js';
+          document.addEventListener('DOMContentLoaded', () => {
+            <% if (locals.kifid) { %>
+            init(<%= locals.kifid %>)
+            <% } else { %>
+            init(null);
+            <% } %>
+          });
+        </script>
     </head>
     <body>
         <div id="shogi-game">

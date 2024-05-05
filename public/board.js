@@ -1,11 +1,6 @@
 import Kifu from './kifu.js';
 
 
-document.addEventListener('DOMContentLoaded', () => {
-  init();
-});
-
-
 const KARA = -1;
 const FU = 0;
 const KYOU = 1;
@@ -39,6 +34,7 @@ class Piece {
 class Game {
   constructor () {
     this.kifu = new Kifu();
+    this.dryRun = false;
 
     const board = [];
     for (let y = 0; y < 9; y++) {
@@ -284,9 +280,8 @@ class Game {
 const game = new Game();
 
 
-const init = () => {
+const init = (kifId) => {
   // Prepare HTML elements for the board
-
   const body = document.getElementsByTagName('body')[0];
   body.onpointerdown = () => {
     unselectHoldingPiece();
@@ -411,6 +406,89 @@ const init = () => {
     });
   }
 
+  // If kifId is not null, replay the kif
+  if (kifId !== null) {
+    replayKif(kifId);
+  }
+
+  if (!game.dryRun) {
+    showBoard();
+  }
+};
+
+
+/*
+ * Plain kif(u) does not contain enough information to reconstruct the Kifu class object.
+ * Therefore, the following method will replay the entire game based on the kif to populate the Kifu object.
+ */
+const replayKif = async (kifId) => {
+  game.dryRun = true;
+  const kif = await fetch(`/kif?kifid=${kifId}`)
+    .then((res) => {
+      if (!res.ok) {
+        console.error("Failed to fetch kif.");
+      }
+      return res.json();
+    })
+    .then((data) => {
+      const kif = data.kif;
+      return kif;
+    });
+
+  const kifReplaying = new Kifu();
+  kifReplaying.parse(kif);
+
+  for (let move of kifReplaying.moves) {
+    const toX = transFromKifX(move.toX);
+    const toY = transFromKifY(move.toY);
+    const fromX = transFromKifX(move.fromX);
+    const fromY = transFromKifY(move.fromY);
+
+    switch (game.state) {
+      case FIRST_MOVE:
+        selectPiece(fromX, fromY);
+        break;
+      case PLAYER_SELECTING:
+      case OPPONENT_SELECTING:
+        if (move.fromInHand) {
+          let [pieceId, _] = pieceCharToIdPromoted(move.piece);
+          selectPieceInHand(pieceId, move.owner === PLAYER);
+        } else {
+          selectPiece(fromX, fromY);
+        }
+        break;
+    }
+
+    // PLAYER_HOLDING_PIECE or OPPONENT_HOLDING_PIECE
+    movePiece(toX, toY);
+
+    if (game.state === SELECT_PROMOTION) {
+      // Emulate the promotion selection
+      if (move.promote) {
+        // Promote the piece
+        let promotedPieceX = null;
+        let promotedPieceY = null;
+        if (move.owner === PLAYER) {
+          promotedPieceX = toX;
+          promotedPieceY = toY + 1;
+        } else {
+          promotedPieceX = toX;
+          promotedPieceY = toY - 1;
+        }
+        selectPromotion(promotedPieceX, promotedPieceY);
+      } else {
+        // Don't promote the piece
+        selectPromotion(toX, toY);
+      }
+    }
+  }
+
+  while (game.turnShowing > 1) {
+    showPrev();
+  }
+
+  game.dryRun = false;
+
   showBoard();
 };
 
@@ -431,7 +509,9 @@ const ondown = (x, y) => {
       break;
   }
 
-  showBoard();
+  if (!game.dryRun) {
+    showBoard();
+  }
 };
 
 
@@ -445,7 +525,9 @@ const unselectHoldingPiece = () => {
     } else {
       game.state = OPPONENT_SELECTING;
     }
-    showBoard();
+    if (!game.dryRun) {
+      showBoard();
+    }
   }
 };
 
@@ -483,7 +565,9 @@ const selectPieceInHand = (pieceId, isPlayer) => {
   } else {
     game.state = OPPONENT_HOLDING_PIECE;
   }
-  showBoard();
+  if (!game.dryRun) {
+    showBoard();
+  }
 }
 
 
@@ -943,3 +1027,6 @@ const transFromKifX = (x) => {
 const transFromKifY = (y) => {
   return y - 1;
 }
+
+// export init function
+export { init };
