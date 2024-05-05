@@ -87,6 +87,18 @@ class KifDB {
       })
     });
   }
+
+  deleteKif(kifId) {
+    return new Promise((resolve, reject) => {
+      this.db.run("DELETE FROM kif WHERE id = ?", kifId, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
 }
 
 module.exports = KifDB;

@@ -11,7 +11,8 @@
     <div id="kif-list">
       <% for (let i = 0; i < kifs.length; i++) { %>
       <div class="kif-item" id="kifid-<%= kifs[i].id %>">
-        <%= kifs[i].title %>
+        <div id="title-kifid-<%= kifs[i].id %>"><%= kifs[i].title %></div>
+        <div class="delete-button" id="delete-kifid-<%= kifs[i].id%>">&#x1f5d1;</div>
       </div>
       <% } %>
     </div>

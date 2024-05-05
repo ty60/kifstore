@@ -57,7 +57,18 @@ app.route("/kif")
     console.log("TODO: update kif");
   })
   .delete(async (req, res) => {
-    console.log("TODO: delete kif");
+    const kifId = req.query.kifid;
+    try {
+      await kifDB.deleteKif(kifId);
+    } catch (err) {
+      console.log(err);
+      res.status(400);
+      res.send("Failed to delete kif");
+      return;
+    }
+
+    res.status(200);
+    res.end();
   });
 
 
