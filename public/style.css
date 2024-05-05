@@ -39,6 +39,26 @@ h1 {
 }
 
 
+#new-kif-button {
+    color: #fff;
+    background-color: #000;
+    border-radius: 100vh;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    width: 150px;
+    height: 40px;
+    font-size: 25px;
+    text-align: center;
+    margin: 0 auto;
+}
+
+#new-kif-button > a {
+    color: #fff;
+    text-decoration: none;
+}
+
+
 /* /board */
 
 #shogi-game {

@@ -8,6 +8,9 @@
   </head>
   <body>
     <h1>棋譜一覧</h1>
+    <div id="new-kif-button">
+        <a href="/board">新規作成</a>
+    </div>
     <div id="kif-list">
       <% for (let i = 0; i < kifs.length; i++) { %>
       <div class="kif-item" id="kifid-<%= kifs[i].id %>">
@@ -15,7 +18,6 @@
         <div class="delete-button" id="delete-kifid-<%= kifs[i].id%>">&#x1f5d1;</div>
       </div>
       <% } %>
-    </div>
-    </div>
+    </div> <!-- kif-list -->
   </body>
 </html>
