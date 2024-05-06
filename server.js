@@ -5,6 +5,7 @@ const app = express();
 const kifDB = new KifDB("./db/kif.db");
 
 const TEMP_USER_ID = 1;
+const KIF_PER_PAGE = 16;
 
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
@@ -14,8 +15,16 @@ app.set("view engine", "ejs");
 
 app.get("/", async (req, res) => {
   let kifs = await kifDB.getKifs(TEMP_USER_ID);
-  console.log(kifs);
-  res.render("index", { kifs: kifs });
+
+  const page = req.query.page !== undefined ? parseInt(req.query.page) : 1;
+  const start = (page - 1) * KIF_PER_PAGE;
+  const end = start + KIF_PER_PAGE;
+
+  const kifPage = kifs.slice(start, end);
+  const hasNext = end < kifs.length;
+  const hasPrev = page > 1;
+
+  res.render("index", { kifs: kifPage, page, hasNext, hasPrev });
 });
 
 app.get("/board/:kifid", async (req, res) => {

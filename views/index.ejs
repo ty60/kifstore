@@ -19,5 +19,25 @@
       </div>
       <% } %>
     </div> <!-- kif-list -->
+    <div id="pagination-container">
+        <div id="prev-button">
+        <% if (hasPrev) { %>
+            <div id="prev-page" class="page-button">
+            <a id="prev-page" href="/?page=<%= page - 1 %>">前へ</a>
+            </div>
+            <% } else { %>
+            <div id="prev-page" class="page-button dummy">前へ</div>
+        <% } %>
+        </div> <!-- prev-button -->
+        <div id="next-button">
+        <% if (hasNext) { %>
+            <div id="next-page" class="page-button">
+            <a id="next-page" href="/?page=<%= page + 1 %>">次へ</a>
+            </div>
+        <% } else { %>
+        <div id="next-page" class="page-button dummy">次へ</div>
+        <% } %>
+        </div> <!-- next-button -->
+    </div> <!-- pagination-container -->
   </body>
 </html>
