@@ -46,7 +46,6 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/board/:kifid", async (req, res) => {
-  console.log("kifid: " + req.params.kifid);
   res.render("board", { kifid: req.params.kifid });
 });
 
@@ -71,7 +70,6 @@ app.route("/kif")
     try {
       await kifDB.addKif(TEMP_USER_ID, kifTitle, kif);
     } catch (err) {
-      console.log(err);
       res.status(400);
       res.send("Failed to add kif");
       return;
@@ -81,14 +79,13 @@ app.route("/kif")
     res.end();
   })
   .put(async (req, res) => {
-    console.log("TODO: update kif");
+    // TODO: update kif
   })
   .delete(async (req, res) => {
     const kifId = req.query.kifid;
     try {
       await kifDB.deleteKif(kifId);
     } catch (err) {
-      console.log(err);
       res.status(400);
       res.send("Failed to delete kif");
       return;
