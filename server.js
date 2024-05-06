@@ -13,8 +13,8 @@ app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-const kifStoreUsername = process.env.USER_NAME !== undefined ? process.env.KIFSTORE_USERNAME : "kifstore";
-const kifStorePassword = process.env.PASSWORD  !== undefined ? process.env.KIFSTORE_PASSWORD : "kifstore12345";
+const kifStoreUsername = process.env.KIFSTORE_USERNAME !== undefined ? process.env.KIFSTORE_USERNAME : "kifstore";
+const kifStorePassword = process.env.KIFSTORE_PASSWORD !== undefined ? process.env.KIFSTORE_PASSWORD : "kifstore12345";
 
 passport.use(new DigestStrategy({ qop: "auth" },
   (username, done) => {
