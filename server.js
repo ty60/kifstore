@@ -1,5 +1,7 @@
 const express = require("express");
 const KifDB = require("./kifDB");
+const passport = require("passport");
+const DigestStrategy = require("passport-http").DigestStrategy;
 
 const app = express();
 const kifDB = new KifDB("./db/kif.db");
@@ -10,6 +12,22 @@ const KIF_PER_PAGE = 16;
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+const kifStoreUsername = process.env.USER_NAME !== undefined ? process.env.KIFSTORE_USERNAME : "kifstore";
+const kifStorePassword = process.env.PASSWORD  !== undefined ? process.env.KIFSTORE_PASSWORD : "kifstore12345";
+
+passport.use(new DigestStrategy({ qop: "auth" },
+  (username, done) => {
+    if (username === kifStoreUsername) {
+      return done(null, kifStoreUsername, kifStorePassword);
+    } else {
+      return done(null, false);
+    }
+  },
+));
+
+app.use(passport.authenticate('digest', { session: false }));
+
 
 app.set("view engine", "ejs");
 
