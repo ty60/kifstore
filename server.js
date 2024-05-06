@@ -1,5 +1,5 @@
 const express = require("express");
-const KifDB = require("./kifDB");
+const KifDB = require("./lib/kifDB");
 const passport = require("passport");
 const DigestStrategy = require("passport-http").DigestStrategy;
 
